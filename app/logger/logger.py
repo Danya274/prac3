@@ -1,5 +1,5 @@
 import logging
-from logging.handlers import TimedRotatingFileHandler
+from logging.handlers import TimedRotatingFileHandler, RotatingFileHandler
 import sys
 
 
@@ -14,19 +14,15 @@ def set_logger(name=__name__, level=logging.INFO):
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
 
-    file_handler = TimedRotatingFileHandler(
+    file_handler = RotatingFileHandler(
         filename='app.log',
-        when='m',
-        interval=15,
+        maxBytes=10 * 1024 * 1024,
         backupCount=5,
-        encoding=None,
-        delay=False,
-        utc=False,
-        atTime=None
+        encoding='utf-8'
     )
     file_handler.setFormatter(formatter)
 
-    # logger.addHandler(file_handler)
+    logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
     return logger

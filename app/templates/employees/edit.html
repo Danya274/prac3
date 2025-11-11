@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Employee{% endblock %}
+
+{% block content %}
+    <h1>Edit Employee</h1>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        <div>
+            <label>Name:</label>
+            <input type="text" name="name" value="{{ employee.name }}">
+        </div>
+
+        <div>
+            <label>Date of Birth:</label>
+            <input type="text" name="date_of_birth" value="{{ employee.date_of_birth }}" placeholder="YYYY-MM-DD">
+        </div>
+
+        <div>
+            <label>Status:</label>
+            <input type="text" name="status" value="{{ employee.status }}" placeholder="active, inactive, vacation">
+        </div>
+
+        <div>
+            <label>Department:</label>
+            <select name="department_id">
+                <option value="">Select department</option>
+                {% for department in departments %}
+                <option value="{{ department.id }}" {% if employee.department_id == department.id %}selected{% endif %}>
+                    {{ department.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Position:</label>
+            <select name="position_id">
+                <option value="">Select position</option>
+                {% for position in positions %}
+                <option value="{{ position.id }}" {% if employee.position_id == position.id %}selected{% endif %}>
+                    {{ position.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Rate:</label>
+            <input type="text" name="rate" value="{{ employee.rate }}">
+        </div>
+
+        <div>
+            <label>Salary:</label>
+            <input type="text" name="salary" value="{{ employee.salary }}">
+        </div>
+
+        <div>
+            <label>Employment Date:</label>
+            <input type="text" name="date_of_employment" value="{{ employee.date_of_employment }}" placeholder="YYYY-MM-DD">
+        </div>
+        <br>
+        <div>
+            <button type="submit" class="btn-create">Update</button>
+            <a href="/pages/employee_list" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+{% endblock %}

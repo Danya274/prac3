@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+    <h1 class="mid-title">Your profile</h1>
+    {% if current_user %}
+        <h2>User information</h2>
+        <p>ID: {{ current_user.id }}</p>
+        <p>Login: {{ current_user.login }}</p>
+        <p>Admin: {{ current_user.is_admin }}</p>
+        <h2>Employee information</h2>
+        <p>ID: {{ current_user.employee.id }}</p>
+        <p>Name: {{ current_user.employee.name }}</p>
+        <p>Date of birth: {{ current_user.employee.date_of_birth }}</p>
+        <p>Status: {{ current_user.employee.status }}</p>
+        <p>Department: {{ current_user.employee.department.name }}</p>
+        <p>Position: {{ current_user.employee.position.name }}</p>
+        <p>Rate: {{ current_user.employee.rate }}</p>
+        <p>Salary: {{ current_user.employee.salary }}</p>
+        <p>Date of employment: {{ current_user.employee.date_of_employment }}</p>
+    {% else %}
+        <p>You are not logged in</p>
+    {% endif %}
+
+    <br>
+    <a href="/pages/" class="btn-back">Back</a>
+
+{% endblock %}

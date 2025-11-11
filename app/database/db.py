@@ -1,6 +1,8 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from .models import Base
 
+import asyncio
+
 from ..core.config import get_db_url
 
 from ..logger.logger import set_logger
@@ -16,6 +18,7 @@ async def get_session():
 
 
 async def setup_database():
+    await asyncio.sleep(5)
     async with engine.begin() as conn:
         logger.info('Setting up database')
         await conn.run_sync(Base.metadata.create_all)

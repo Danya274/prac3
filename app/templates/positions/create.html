@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Create Position{% endblock %}
+
+{% block content %}
+    <h1>Create Position</h1>
+    
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+    
+    <form method="post">
+        <div>
+            <label>Position Name:</label>
+            <input type="text" name="name" required>
+        </div>
+        
+        <br>
+        <div>
+            <button type="submit" class="btn-create">Create</button>
+            <a href="/pages/positions" class="btn-back">Cancel</a>
+        </div>
+    </form>
+{% endblock %}

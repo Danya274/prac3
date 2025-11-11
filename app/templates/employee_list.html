@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Employees list{% endblock %}
+
+{% block content %}
+    <h1 class="mid-title">Employees list</h1>
+
+    <form method="get" action="/pages/employee_list">
+    <div>
+        <label>Search by name:</label>
+        <input type="text" name="FIO_search" value="{{ FIO_search }}">
+    </div>
+
+    <div>
+        <label>Department:</label>
+        <select name="department_id">
+            <option value="">All departments</option>
+            {% for department in departments %}
+            <option value="{{ department.id }}"
+                {% if selected_department_id == department.id %}selected{% endif %}>
+                {{ department.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label>Position:</label>
+        <select name="position_id">
+            <option value="">All positions</option>
+            {% for position in positions %}
+            <option value="{{ position.id }}"
+                {% if selected_position_id == position.id %}selected{% endif %}>
+                {{ position.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label>Salary from:</label>
+        <input type="number" name="salary_from" value="{{ salary_from }}">
+    </div>
+
+    <div>
+        <label>Salary to:</label>
+        <input type="number" name="salary_to" value="{{ salary_to }}">
+    </div>
+
+    <input type="hidden" name="page" value="1">
+    <input type="hidden" name="size" value="5">
+
+    <button type="submit" class="btn-create">Apply Filters</button>
+    <a href="/pages/employee_list" class="btn-back">Clear Filters</a>
+</form>
+
+    {% if is_admin %}
+    <div>
+        <a href="/pages/employees/create" class="btn-create">
+            Create
+        </a>
+    </div>
+    {% endif %}
+
+    <table border="4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Date of birth</th>
+                <th>Status</th>
+                <th>Department</th>
+                <th>Position</th>
+                <th>Rate</th>
+                <th>Salary</th>
+                <th>Date of employment</th>
+                <th>User account</th>
+                {% if is_admin %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td>{{ employee.id }}</td>
+                <td>{{ employee.name }}</td>
+                <td>{{ employee.date_of_birth }}</td>
+                <td>{{ employee.status }}</td>
+                <td>{{ employee.department.name }}</td>
+                <td>{{ employee.position.name }}</td>
+                <td>{{ employee.rate }}</td>
+                <td>{{ employee.salary }}</td>
+                <td>{{ employee.date_of_employment }}</td>
+                <td>
+                    {% if employee.user %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </td>
+                {% if is_admin %}
+                <td>
+                    <a href="/pages/employees/update/{{ employee.id }}" class="btn-edit">Edit</a>
+                    <a href="/pages/employees/delete/{{ employee.id }}" class="btn-delete">Delete</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div>
+    {% if has_prev %}
+        <a href="/pages/employee_list?page={{ current_page - 1 }}&size=5{% if FIO_search %}&FIO_search={{ FIO_search }}{% endif %}{% if selected_department_id %}&department_id={{ selected_department_id }}{% endif %}{% if selected_position_id %}&position_id={{ selected_position_id }}{% endif %}{% if salary_from %}&salary_from={{ salary_from }}{% endif %}{% if salary_to %}&salary_to={{ salary_to }}{% endif %}" class="btn-next-prev">← Previous</a>
+    {% endif %}
+
+    <span>Page {{ current_page }} of {{ total_pages }}</span>
+
+    {% if has_next %}
+        <a href="/pages/employee_list?page={{ current_page + 1 }}&size=5{% if FIO_search %}&FIO_search={{ FIO_search }}{% endif %}{% if selected_department_id %}&department_id={{ selected_department_id }}{% endif %}{% if selected_position_id %}&position_id={{ selected_position_id }}{% endif %}{% if salary_from %}&salary_from={{ salary_from }}{% endif %}{% if salary_to %}&salary_to={{ salary_to }}{% endif %}" class="btn-next-prev">Next →</a>
+    {% endif %}
+</div>
+
+    <br>
+    <a href="/pages/" class="btn-back">Back</a>
+{% endblock %}

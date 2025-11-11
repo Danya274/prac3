@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Main page{% endblock %}
+
+{% block content %}
+    <h1></h1>
+    <div class="left-panel">
+        <a href="profile" class="btn-profile">My profile</a>
+        {% if login == 0 %}
+            <a href="logout" class="btn-logout">Log out</a>
+        {% else %}
+            <a href="login" class="btn-login">Log in</a>
+        {% endif %}
+    </div>
+    <div class="button-container">
+        <a href="employee_list" class="btn-employee_list">Employees</a>
+        <a href="departments" class="btn-departments">Departments</a>
+        <a href="positions" class="btn-positions">Positions</a>
+    </div>
+
+{% endblock %}

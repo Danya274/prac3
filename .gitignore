@@ -163,3 +163,8 @@ cython_debug/
 .idea/
 **/.idea/
 
+
+# Alembic
+alembic.ini
+alembic/versions/*.py
+!alembic/versions/.gitkeep

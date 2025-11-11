@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Positions{% endblock %}
+
+{% block content %}
+    <h1 class="mid-title">Positions list</h1>
+    {% if is_admin %}
+    <div>
+        <a href="/pages/positions/create" class="btn-create">
+            Create Position
+        </a>
+    </div>
+    {% endif %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                {% if is_admin %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for position in positions %}
+            <tr>
+                <td>{{ position.id }}</td>
+                <td>{{ position.name }}</td>
+                {% if is_admin %}
+                <td>
+                    <a href="/pages/positions/update/{{ position.id }}" class="btn-edit">Edit</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="/pages/" class="btn-back">Back</a>
+{% endblock %}

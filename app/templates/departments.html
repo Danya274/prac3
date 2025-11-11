@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Departments{% endblock %}
+
+{% block content %}
+    <h1 class="mid-title">Departments list</h1>
+    {% if is_admin %}
+    <div>
+        <a href="/pages/departments/create" class="btn-create">
+            Create
+        </a>
+    </div>
+    {% endif %}
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                {% if is_admin %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for department in departments %}
+            <tr>
+                <td>{{ department.id }}</td>
+                <td>{{ department.name }}</td>
+                {% if is_admin %}
+                <td>
+                    <a href="/pages/departments/update/{{ department.id }}" class="btn-edit">Edit</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="/pages/" class="btn-back">Back</a>
+{% endblock %}

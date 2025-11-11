@@ -9,6 +9,7 @@ from .models import EmployeeModel, PositionModel, DepartmentModel, UserModel
 from app.schemas.employee import EmployeeSchema
 from app.schemas.position import PositionSchema
 from app.schemas.department import DepartmentSchema
+from sqlalchemy.orm import selectinload
 
 logger = set_logger("DB_UTILS")
 
@@ -37,7 +38,7 @@ async def write_to_db(data, session: AsyncSession):
         return False
 
 
-async def get_all_items(model, session: AsyncSession, page: int = 1, size: int = 10, filters: [Dict[str, Any]] = None):
+async def get_all_items(model, session: AsyncSession, filters: [Dict[str, Any]] = None):
     items = None
     try:
         if model is EmployeeModel:
@@ -61,8 +62,6 @@ async def get_all_items(model, session: AsyncSession, page: int = 1, size: int =
 
             if filters_conditions:
                 query = query.where(and_(*filters_conditions))
-        offset = (page - 1) * size
-        query = query.offset(offset).limit(size)
 
         result = await session.execute(query)
         items = result.scalars().all()
@@ -70,37 +69,13 @@ async def get_all_items(model, session: AsyncSession, page: int = 1, size: int =
         logger.error(f'Error get all items with {model} ===> {e}')
 
     if items:
-        logger.info(f'Items found: {len(items)} with filters: {filters}, page: {page}, size: {size}')
+        logger.info(f'Items found: {len(items)} with filters: {filters}')
         return items
 
     logger.info(f'No items found with model: {model}, filters: {filters}')
     return None
-# async def get_item_from_db(id, model, session: AsyncSession):
-#     item = None
-#     try:
-#         if model is EmployeeModel:
-#             query = select(EmployeeModel).where(EmployeeModel.id == id)
-#             result = await session.execute(query)
-#             item = result.scalar_one_or_none()
-#
-#         elif model is PositionModel:
-#             query = select(PositionModel).where(PositionModel.id == id)
-#             result = await session.execute(query)
-#             item = result.scalar_one_or_none()
-#
-#         elif model is DepartmentModel:
-#             query = select(DepartmentModel).where(DepartmentModel.id == id)
-#             result = await session.execute(query)
-#             item = result.scalar_one_or_none()
-#         else:
-#             logger.error(f"Unsupported data type: {type(model)}")
-#     except Exception as e:
-#         logger.error(f'Error get item with {id} : {item} ===> {e}')
-#     if item:
-#         logger.info(f'Item found with {id} : {item}')
-#         return item
-#     logger.info(f'Item not found with {id} : {item}')
-#     return None
+
+
 async def get_item_from_db(value, model, session: AsyncSession, field: str = 'id'):
     item = None
     try:
@@ -163,3 +138,41 @@ async def delete_item_from_db(id, model, session: AsyncSession):
             return False
     except Exception as e:
         logger.error(f'Error delete item with {id} : {model} ===> {e}')
+
+
+
+async def get_items_with_relationship(model, session: AsyncSession, relations: list[str] = None, page: int = 1, size: int = 5):
+    query = select(model)
+
+    if relations:
+        for relation in relations:
+            query = query.options(selectinload(getattr(model, relation)))
+    offset = (page - 1) * size
+    query = query.offset(offset).limit(size)
+    result = await session.execute(query)
+    if result is None:
+        return None
+    return result.scalars().all()
+
+
+async def get_item_with_relationship(model, item_id, session: AsyncSession, relations: list[str] = None):
+
+    query = select(model).where(model.id == item_id) #type: ignore
+
+    if relations:
+        for relation in relations:
+            if relation == 'employee.department':
+                query = query.options(
+                    selectinload(UserModel.employee).selectinload(EmployeeModel.department)
+                )
+            elif relation == 'employee.position':
+                query = query.options(
+                    selectinload(UserModel.employee).selectinload(EmployeeModel.position)
+                )
+            elif relation == 'employee':
+                query = query.options(selectinload(UserModel.employee))
+            else:
+                query = query.options(selectinload(getattr(model, relation)))
+
+    result = await session.execute(query)
+    return result.scalar_one_or_none()

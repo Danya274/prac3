@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Department{% endblock %}
+
+{% block content %}
+    <h1>Edit Department</h1>
+    
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+    
+    <form method="post">
+        <div>
+            <label>Department Name:</label>
+            <input type="text" name="name" value="{{ department.name }}" required>
+        </div>
+        
+        <br>
+        <div>
+            <button type="submit" class="btn-edit">Update</button>
+            <a href="/pages/departments" class="btn-back">Cancel</a>
+        </div>
+    </form>
+{% endblock %}
