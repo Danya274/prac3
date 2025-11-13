@@ -32,7 +32,7 @@ async def register_user(user_data: UserRegSchema, session: SessionDep):
                 message='Employee not found'
             )
 
-        exist_user = await get_all_items(UserModel, session, filters={'login': user_data.login})
+        exist_user = await get_all_items(UserModel, session, login=user_data.login)
 
         if exist_user:
             logger.info(f'User with login: {user_data.login} already exist')
@@ -41,7 +41,7 @@ async def register_user(user_data: UserRegSchema, session: SessionDep):
                 message='User with this login already exist'
             )
 
-        exist_employee_user = await get_all_items(UserModel, session, filters={'employee_id': user_data.employee_id})
+        exist_employee_user = await get_all_items(UserModel, session, employee_id=user_data.employee_id)
 
         if exist_employee_user:
             logger.info(f'Employee with id: {user_data.employee_id} already has user accoutn')
@@ -127,15 +127,21 @@ async def get_users(admin: CurrentAdminDep, session: SessionDep):
         )
 
     users = await get_all_items(UserModel, session)
-    users_schemas = [UserResponseSchema(
-        id=user.id,
-        login=user.login,
-        employee_id=user.employee_id,
-        is_admin=user.is_admin
-    ) for user in users]
-    logger.info(f'Admin {admin.id} get all users')
+    if users:
+        users_schemas = [UserResponseSchema(
+            id=user.id,
+            login=user.login,
+            employee_id=user.employee_id,
+            is_admin=user.is_admin
+        ) for user in users]
+        logger.info(f'Admin {admin.id} get all users')
+        return DefaultResponse(
+            error=False,
+            message='All users',
+            payload=users_schemas
+        )
+
     return DefaultResponse(
-        error=False,
-        message='All users',
-        payload=users_schemas
+        error=True,
+        message='Users not found'
     )

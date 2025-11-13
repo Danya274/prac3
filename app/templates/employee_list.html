@@ -87,8 +87,8 @@
                 <td>{{ employee.name }}</td>
                 <td>{{ employee.date_of_birth }}</td>
                 <td>{{ employee.status }}</td>
-                <td>{{ employee.department.name }}</td>
-                <td>{{ employee.position.name }}</td>
+                <td>{{ employee.department.name if employee.department else 'No department' }}</td>
+                <td>{{ employee.position.name if employee.position else 'No position' }}</td>
                 <td>{{ employee.rate }}</td>
                 <td>{{ employee.salary }}</td>
                 <td>{{ employee.date_of_employment }}</td>

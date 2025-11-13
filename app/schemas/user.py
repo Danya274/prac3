@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-from app.schemas.employee import EmployeeResponseSchema
 
 
 class UserRegSchema(BaseModel):

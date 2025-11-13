@@ -51,7 +51,7 @@ async def get_employee_list(request: Request,
     if position_id_int:
         filters['position_id'] = position_id_int
 
-    all_employees = await get_all_items(EmployeeModel, session, filters=filters)
+    all_employees = await get_all_items(EmployeeModel, session, **filters)
     filtered_employees = all_employees if all_employees else []
     if FIO_search and FIO_search != '':
         filtered_employees = [

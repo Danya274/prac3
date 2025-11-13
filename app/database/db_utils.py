@@ -38,43 +38,22 @@ async def write_to_db(data, session: AsyncSession):
         return False
 
 
-async def get_all_items(model, session: AsyncSession, filters: [Dict[str, Any]] = None):
-    items = None
+async def get_all_items(model, session: AsyncSession, **filters):
     try:
-        if model is EmployeeModel:
-            query = select(EmployeeModel)
-        elif model is PositionModel:
-            query = select(PositionModel)
-        elif model is DepartmentModel:
-            query = select(DepartmentModel)
-        elif model is UserModel:
-            query = select(UserModel)
-        else:
-            logger.info(f'Unsupported data type: {type(model)}')
-            return None
+        query = select(model)
 
         if filters:
-            filters_conditions = []
-            for field, value in filters.items():
-                if hasattr(model, field):
-                    field = getattr(model, field)
-                    filters_conditions.append(field == value)
-
-            if filters_conditions:
-                query = query.where(and_(*filters_conditions))
+            query = query.filter_by(**filters)
 
         result = await session.execute(query)
         items = result.scalars().all()
-    except Exception as e:
-        logger.error(f'Error get all items with {model} ===> {e}')
 
-    if items:
         logger.info(f'Items found: {len(items)} with filters: {filters}')
         return items
 
-    logger.info(f'No items found with model: {model}, filters: {filters}')
-    return None
-
+    except Exception as e:
+        logger.error(f'Error get all items with {model} ===> {e}')
+        return None
 
 async def get_item_from_db(value, model, session: AsyncSession, field: str = 'id'):
     item = None
@@ -140,19 +119,29 @@ async def delete_item_from_db(id, model, session: AsyncSession):
         logger.error(f'Error delete item with {id} : {model} ===> {e}')
 
 
+async def get_items_with_relationship(model, session: AsyncSession, relations: list[str] = None, page: int = 1,
+                                      size: int = 5, **filters):
+    try:
+        query = select(model)
 
-async def get_items_with_relationship(model, session: AsyncSession, relations: list[str] = None, page: int = 1, size: int = 5):
-    query = select(model)
+        if relations:
+            for relation in relations:
+                query = query.options(selectinload(getattr(model, relation)))
 
-    if relations:
-        for relation in relations:
-            query = query.options(selectinload(getattr(model, relation)))
-    offset = (page - 1) * size
-    query = query.offset(offset).limit(size)
-    result = await session.execute(query)
-    if result is None:
+        if filters:
+            query = query.filter_by(**filters)
+
+        offset = (page - 1) * size
+        query = query.offset(offset).limit(size)
+
+        result = await session.execute(query)
+        items = result.scalars().all()
+
+        return items
+
+    except Exception as e:
+        logger.error(f'Error get items with relationship: {e}')
         return None
-    return result.scalars().all()
 
 
 async def get_item_with_relationship(model, item_id, session: AsyncSession, relations: list[str] = None):

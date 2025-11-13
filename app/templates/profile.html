@@ -14,8 +14,8 @@
         <p>Name: {{ current_user.employee.name }}</p>
         <p>Date of birth: {{ current_user.employee.date_of_birth }}</p>
         <p>Status: {{ current_user.employee.status }}</p>
-        <p>Department: {{ current_user.employee.department.name }}</p>
-        <p>Position: {{ current_user.employee.position.name }}</p>
+        <p>Department: {{ current_user.employee.department.name if current_user.employee.department else 'No department' }}</p>
+        <p>Position: {{ current_user.employee.position.name if current_user.employee.position else 'No position' }}</p>
         <p>Rate: {{ current_user.employee.rate }}</p>
         <p>Salary: {{ current_user.employee.salary }}</p>
         <p>Date of employment: {{ current_user.employee.date_of_employment }}</p>
